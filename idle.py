@@ -104,11 +104,13 @@ class Game:
     def spawn_cell(self):
         # Cost grows the more cells you have
         base_cost = 10
-        total_cost = base_cost + len(self.player_cells) * 20
+        total_cost = base_cost
+        #total_cost = base_cost + len(self.player_cells) * 20
 
         if self.proteins >= total_cost:
             name = choice(list(self.data['white cell']))
             c = Cell(name=name, data=self.data['white cell'][name], game=self)
+            c.spawn()
             #self.player_cells.append(c)
             self.proteins -= total_cost
             self.log("%s cell purchased." % c.name)
@@ -127,10 +129,10 @@ class Life(object):
 
     def spawn(self):
         self.hp = self.data.get('base_hp', 1)
-        self.defense = self.data.get('defense', 0)
         self.description = self.data.get('description', 'No description set')
         self.symbol = self.data.get('symbol', 'o')
         self.palette = self.data.get('palette', 'white')
+        self.defense = self.data.get('defense', 0)
         self.base_attack = self.data.get('base_attack', 0)
         self.lifespan = self.data.get('lifespan', 50)
         self.age = 0
