@@ -24,7 +24,7 @@ class Game:
         self.proteins = 0
         self.player_cells = []
         self.antigens = []
-        self.msglog = []
+        self.msglog = ['','','','','']
         self.paused = False
 
     def display_log(self):
