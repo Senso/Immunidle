@@ -81,7 +81,28 @@ class MainWindow:
         for i in self.game.antigens:
             antigen_str.append((i.palette, i.symbol))
         if antigen_str:
-            self.area.antigens.set_text(antigen_str)    
+            self.area.antigens.set_text(antigen_str)
+
+    def draw_cells_desc(self):
+        content = []
+        for i in self.game.player_cells:
+            content.append((i.palette, i.symbol))
+            # b: Basophil (age: 30) ()
+            content.append(('body', ": %s (age: %s)" % (i.name, i.age)))
+            content.append(('body', "[ATK/DEF: %s/%s]" % (i.base_attack, i.defense)))
+            content.append(('body', '\n'))
+        if content:
+            self.area.cells_txt.set_text(content)
+
+    def draw_antigens_desc(self):
+        content = []
+        for i in self.game.antigens:
+            content.append((i.palette, i.symbol))
+            content.append(('body', "(%s)" % i.name))
+            content.append(('body', '\n'))
+        if content:
+            self.area.cells_txt.set_text(content)
+
 
     def game_tick(self, loop, user_data):
         # So we have a single alarm object at all times?
@@ -90,7 +111,9 @@ class MainWindow:
         self.write_header()
 
         self.draw_cells()
+        self.draw_cells_desc()
         self.draw_antigens()
+        self.draw_cells_desc()
 
         self.write_footer()
 
@@ -114,7 +137,7 @@ class MainWindow:
 class MainFrame(urwid.Frame):
 
     def keypress(self, size, key):
-        #self.mainloop.game.log("key pressed: %s" % key)
+        self.mainloop.game.log("key pressed: %s" % key)
         if key == 'q':
             raise urwid.ExitMainLoop()
         elif key == 'n':
