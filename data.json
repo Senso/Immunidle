@@ -1,0 +1,72 @@
+{
+	"antigen": {
+		"e. coli": {
+			"description": "diarrhea",
+			"base_hp": 1,
+			"defense": 1,
+			"min_level": 1,
+			"max_level": 20,
+			"symbol": "i",
+			"palette": "brown"
+		},
+		"staph. aureus": {
+			"description": "boils",
+			"base_hp": 2,
+			"defense": 1,
+			"min_level": 1,
+			"max_level": 20,
+			"symbol": "o",
+			"palette": "yellow"
+
+		},
+		"strep. pyogenes": {
+			"description": "strep throat",
+			"base_hp": 1,
+			"defense": 1,
+			"min_level": 1,
+			"max_level": 20,
+			"symbol": ":",
+			"palette": "red"
+		}
+	},
+
+	"white cell": {
+		"T helper": {
+			"description": "Lymphocyte",
+			"base_attack": 1,
+			"symbol": "o",
+			"palette": "light blue",
+			"base_cost": 10,
+			"lifespan": 50
+		},
+		"Macrophage": {
+			"description": "Phagocyte monocyte",
+			"base_attack": 2,
+			"symbol": "O",
+			"palette": "white blue",
+			"base_cost": 20,
+			"lifespan": 50
+		},
+		"Neutrophil": {
+			"description": "most abundant leukocyte, is a phagocyte first responder",
+			"symbol": "n",
+			"palette": "red brown",
+			"base_cost": 20,
+			"lifespan": 50
+		},
+		"Eosinophil": {
+			"description": "leukocyte",
+			"symbol": "e",
+			"palette": "red",
+			"base_cost": 20,
+			"lifespan": 50
+		},
+		"Basophil": {
+			"description": "leukocyte",
+			"symbol": "b",
+			"palette": "purple",
+			"base_cost": 20,
+			"lifespan": 50
+		}
+	}
+}
