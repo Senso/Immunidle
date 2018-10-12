@@ -26,16 +26,18 @@ class MainWindow:
         self.header_text = urwid.Text(u"Top\nheader")
         self.header = urwid.AttrWrap(self.header_text, 'header')
 
-        self.cell_txt = urwid.Text("")
-        self.antigen_txt = urwid.Text("")
-        self.player_col = urwid.Filler(self.cell_txt, valign='top', height='pack')
-        self.antigen_col = urwid.Filler(self.antigen_txt, valign='top', height='pack')
-        self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.antigen_col)])
+        # self.cell_txt = urwid.Text("")
+        # self.antigen_txt = urwid.Text("")
+        # self.player_col = urwid.Filler(self.cell_txt, valign='top', height='pack')
+        # self.antigen_col = urwid.Filler(self.antigen_txt, valign='top', height='pack')
+        # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.antigen_col)])
 
-        self.footer_text = urwid.Text(u"Bottom\nfooter")
+        self.area = GameArea()
+
+        self.footer_text = urwid.Text(u"")
         self.footer = urwid.AttrWrap(self.footer_text, 'footer')
 
-        self.view = MainFrame(header=self.header, body=self.body, footer=self.footer, focus_part='body')
+        self.view = MainFrame(header=self.header, body=self.area.body, footer=self.footer, focus_part='body')
         self.view.mainloop = self
 
         self.last_alarm = None
@@ -71,14 +73,14 @@ class MainWindow:
         for i in self.game.player_cells:
             cell_str.append((i.palette, i.symbol))
         if cell_str:
-            self.cell_txt.set_text(cell_str)
+            self.area.cells.set_text(cell_str)
 
     def draw_antigens(self):
         antigen_str = []
         for i in self.game.antigens:
             antigen_str.append((i.palette, i.symbol))
         if antigen_str:
-            self.antigen_txt.set_text(antigen_str)    
+            self.area.antigens.set_text(antigen_str)    
 
     def game_tick(self, loop, user_data):
         # So we have a single alarm object at all times?
@@ -114,15 +116,11 @@ class MainFrame(urwid.Frame):
         #self.mainloop.game.log("key pressed: %s" % key)
         if key == 'q':
             raise urwid.ExitMainLoop()
-            #return super(OptionOverlay, self).keypress(size, key)
         elif key == 'n':
             self.mainloop.game.spawn_cell()
             self.mainloop.write_header()
         elif key == 'd':
-            #self.narf.game.log("focus: %s" % (self.focus))
             self.purchase_pop_up()
-        #elif key == 'enter':
-        #    self.mainloop.game.log("enter pressed.")
         elif key == ' ':
             if self.mainloop.game.paused:
                 self.mainloop.game.log("Game unpaused.")
@@ -144,7 +142,6 @@ class MainFrame(urwid.Frame):
             height = 6,
             left = 5,
             )
-        #self.mainloop.loop.widget.original_widget = self
         self.mainloop.loop.widget = overlay
 
 
@@ -157,3 +154,25 @@ class OptionOverlay(urwid.Overlay):
             raise urwid.ExitMainLoop()
         elif key == 'enter':
             self.bottom_w.mainloop.loop.widget = self.bottom_w
+
+class GameArea:
+    def __init__(self):
+        self.cells = urwid.Text("NW")
+        self.antigens = urwid.Text("NE")
+        self.cells_txt = urwid.Text("SW")
+        self.antigens_txt = urwid.Text("SE")
+
+        self.cells_col = urwid.Pile([
+            (10, urwid.LineBox(urwid.Filler(self.cells))),
+            urwid.LineBox(urwid.Filler(self.cells_txt)),
+        ])
+
+        self.antigens_col = urwid.Pile([
+            (10, urwid.LineBox(urwid.Filler(self.antigens))),
+            urwid.LineBox(urwid.Filler(self.antigens_txt)),
+        ])
+
+        self.body = urwid.Columns([self.cells_col, self.antigens_col])
+
+    def selectable(self):
+        return True
