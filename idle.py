@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from random import choice, randrange
 import time
 import json

@@ -1,3 +1,4 @@
+
 import urwid
 
 class MainWindow:
@@ -172,7 +173,7 @@ class GameArea:
             urwid.LineBox(urwid.Filler(self.antigens_txt)),
         ])
 
-        self.body = urwid.Columns([self.cells_col, self.antigens_col])
+        self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.antigens_col]), 'body')
 
     def selectable(self):
         return True
