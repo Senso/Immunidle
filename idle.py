@@ -10,8 +10,8 @@ from window import MainWindow
 
 ### TODO
 # X game pause
-# antigens attacking (virus)
-# antigens replicating
+# pathogens attacking (virus)
+# pathogens replicating
 # python native 64-bit numbers?
 # keypress for bigger/longer log window
 # X programmed cell death
@@ -25,7 +25,7 @@ class Game:
         self.level = 0
         self.proteins = 0
         self.player_cells = []
-        self.antigens = []
+        self.pathogens = []
         self.msglog = ['','','','','']
         self.paused = False
 
@@ -45,17 +45,17 @@ class Game:
 
     def initialize_level(self):
         for i in range(0, self.level):
-            name = choice(list(self.data['antigen']))
+            name = choice(list(self.data['pathogen']))
 
             # multiply base_hp with the current level
-            a = Antigen(name=name, data=self.data['antigen'][name], game=self)
+            a = Pathogen(name=name, data=self.data['pathogen'][name], game=self)
             a.spawn()
             a.hp = a.hp * self.level
 
-            #self.antigens.append(a)
+            #self.pathogens.append(a)
 
     def check_level_state(self):
-        if len(self.antigens) == 0:
+        if len(self.pathogens) == 0:
             self.level += 1
             self.initialize_level()
 
@@ -68,21 +68,21 @@ class Game:
 
     def flash(self, loop, target):
         target.palette = "flash %s" % target.palette
-        loop.widget.mainloop.draw_antigens()
+        loop.widget.mainloop.draw_pathogens()
         loop.draw_screen()
         loop.set_alarm_in(0.2, self.unflash, target)
 
     def unflash(self, loop, target):
         target.palette = target.palette.replace('flash ', '')
-        loop.widget.mainloop.draw_antigens()
+        loop.widget.mainloop.draw_pathogens()
         loop.draw_screen()
 
     def player_attack(self, mwin):
         for c in self.player_cells:
-            if not self.antigens:
+            if not self.pathogens:
                 return
 
-            target = choice(self.antigens)
+            target = choice(self.pathogens)
 
             # Calculate damage
             dmg = c.base_attack
@@ -98,8 +98,8 @@ class Game:
 
             if target.hp <= 0:
                 target.die('killed by %s' % c.name)
-                # Antigen dies/is absorbed
-                #self.antigens.remove(target)
+                # Pathogen dies/is absorbed
+                #self.pathogens.remove(target)
 
     def spawn_cell(self):
         # Cost grows the more cells you have
@@ -140,16 +140,16 @@ class Life(object):
         # Add ourself to the game world
         if type(self).__name__ == 'Cell':
             self.game.player_cells.append(self)
-        elif type(self).__name__ == 'Antigen':
-            self.game.antigens.append(self)
+        elif type(self).__name__ == 'Pathogen':
+            self.game.pathogens.append(self)
         else:
             self.game.log("Unknown %s tried to spawn." % type(self).__name__)
 
     def die(self, msg=None):
         if type(self).__name__ == 'Cell':
             self.game.player_cells.remove(self)
-        elif type(self).__name__ == 'Antigen':
-            self.game.antigens.remove(self)
+        elif type(self).__name__ == 'Pathogen':
+            self.game.pathogens.remove(self)
         else:
             self.game.log("Unknown %s tried to die." % type(self).__name__)
         if msg:
@@ -161,7 +161,7 @@ class Life(object):
             self.die('of old age')
 
 
-class Antigen(Life):
+class Pathogen(Life):
     def __init__(self, name, game, data):
         super().__init__(name, game, data)
 

@@ -1,5 +1,5 @@
 {
-	"antigen": {
+	"Pathogen": {
 		"e. coli": {
 			"description": "diarrhea",
 			"base_hp": 1,

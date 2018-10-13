@@ -28,10 +28,10 @@ class MainWindow:
         self.header = urwid.AttrWrap(self.header_text, 'header')
 
         # self.cell_txt = urwid.Text("")
-        # self.antigen_txt = urwid.Text("")
+        # self.Pathogen_txt = urwid.Text("")
         # self.player_col = urwid.Filler(self.cell_txt, valign='top', height='pack')
-        # self.antigen_col = urwid.Filler(self.antigen_txt, valign='top', height='pack')
-        # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.antigen_col)])
+        # self.Pathogen_col = urwid.Filler(self.Pathogen_txt, valign='top', height='pack')
+        # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.Pathogen_col)])
 
         self.area = GameArea()
 
@@ -76,12 +76,12 @@ class MainWindow:
         if cell_str:
             self.area.cells.set_text(cell_str)
 
-    def draw_antigens(self):
-        antigen_str = []
-        for i in self.game.antigens:
-            antigen_str.append((i.palette, i.symbol))
-        if antigen_str:
-            self.area.antigens.set_text(antigen_str)
+    def draw_Pathogens(self):
+        Pathogen_str = []
+        for i in self.game.Pathogens:
+            Pathogen_str.append((i.palette, i.symbol))
+        if Pathogen_str:
+            self.area.Pathogens.set_text(Pathogen_str)
 
     def draw_cells_desc(self):
         content = []
@@ -94,9 +94,9 @@ class MainWindow:
         if content:
             self.area.cells_txt.set_text(content)
 
-    def draw_antigens_desc(self):
+    def draw_Pathogens_desc(self):
         content = []
-        for i in self.game.antigens:
+        for i in self.game.Pathogens:
             content.append((i.palette, i.symbol))
             content.append(('body', "(%s)" % i.name))
             content.append(('body', '\n'))
@@ -112,7 +112,7 @@ class MainWindow:
 
         self.draw_cells()
         self.draw_cells_desc()
-        self.draw_antigens()
+        self.draw_Pathogens()
         self.draw_cells_desc()
 
         self.write_footer()
@@ -182,21 +182,21 @@ class OptionOverlay(urwid.Overlay):
 class GameArea:
     def __init__(self):
         self.cells = urwid.Text("NW")
-        self.antigens = urwid.Text("NE")
+        self.Pathogens = urwid.Text("NE")
         self.cells_txt = urwid.Text("SW")
-        self.antigens_txt = urwid.Text("SE")
+        self.Pathogens_txt = urwid.Text("SE")
 
         self.cells_col = urwid.Pile([
             (10, urwid.LineBox(urwid.Filler(self.cells))),
             urwid.LineBox(urwid.Filler(self.cells_txt)),
         ])
 
-        self.antigens_col = urwid.Pile([
-            (10, urwid.LineBox(urwid.Filler(self.antigens))),
-            urwid.LineBox(urwid.Filler(self.antigens_txt)),
+        self.Pathogens_col = urwid.Pile([
+            (10, urwid.LineBox(urwid.Filler(self.Pathogens))),
+            urwid.LineBox(urwid.Filler(self.Pathogens_txt)),
         ])
 
-        self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.antigens_col]), 'body')
+        self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.Pathogens_col]), 'body')
 
     def selectable(self):
         return True
