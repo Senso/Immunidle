@@ -27,13 +27,7 @@ class MainWindow:
         self.header_text = urwid.Text(u"Top\nheader")
         self.header = urwid.AttrWrap(self.header_text, 'header')
 
-        # self.cell_txt = urwid.Text("")
-        # self.pathogen_txt = urwid.Text("")
-        # self.player_col = urwid.Filler(self.cell_txt, valign='top', height='pack')
-        # self.pathogen_col = urwid.Filler(self.pathogen_txt, valign='top', height='pack')
-        # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.pathogen_col)])
-
-        self.area = GameArea()
+        self.area = GameArea(self.game.body.organs, self.game.body.lymph_system)
 
         self.footer_text = urwid.Text(u"")
         self.footer = urwid.AttrWrap(self.footer_text, 'footer')
@@ -180,21 +174,32 @@ class OptionOverlay(urwid.Overlay):
             self.bottom_w.mainloop.loop.widget = self.bottom_w
 
 class GameArea:
-    def __init__(self):
+    def __init__(self, organs, lymphs):
+        # Obsolete:
         self.cells = urwid.Text("NW")
         self.pathogens = urwid.Text("NE")
         self.cells_txt = urwid.Text("SW")
         self.pathogens_txt = urwid.Text("SE")
 
-        self.cells_col = urwid.Pile([
-            (10, urwid.LineBox(urwid.Filler(self.cells))),
-            urwid.LineBox(urwid.Filler(self.cells_txt)),
-        ])
+        # Left side
+        self.lymph_window = {}
+        for l in lymphs.keys():
+            self.lymph_window[l] = urwid.Text("%s\n" % l)
 
-        self.pathogens_col = urwid.Pile([
-            (10, urwid.LineBox(urwid.Filler(self.pathogens))),
-            urwid.LineBox(urwid.Filler(self.pathogens_txt)),
-        ])
+        self.all_lymphs = [(4, urwid.LineBox(urwid.Filler(y))) for y in self.lymph_window.values()]
+        self.all_lymphs.append((10, urwid.LineBox(urwid.Filler(self.cells_txt))))
+
+        self.cells_col = urwid.Pile(self.all_lymphs)
+
+        # Right side
+        self.organ_window = {}
+        for o in organs.keys():
+            self.organ_window[o] = urwid.Text("%s\n" % o)
+
+        self.all_organs = [(4, urwid.LineBox(urwid.Filler(y))) for y in self.organ_window.values()]
+        self.all_organs.append((10, urwid.LineBox(urwid.Filler(self.pathogens_txt))))
+
+        self.pathogens_col = urwid.Pile(self.all_organs)
 
         self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.pathogens_col]), 'body')
 

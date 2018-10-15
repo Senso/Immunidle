@@ -5,6 +5,7 @@ import time
 import json
 import urwid
 from window import MainWindow
+from body import Body
 
 #import urwid.curses_display
 
@@ -28,6 +29,8 @@ class Game:
         self.pathogens = []
         self.msglog = ['','','','','']
         self.paused = False
+
+        self.body = Body()
 
     def display_log(self):
         return '\n'.join(self.msglog[-5:])
