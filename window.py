@@ -47,6 +47,7 @@ class MainWindow:
 
         #self.loop = urwid.MainLoop(self.view, self.palette, input_filter=self.input_filter) #, pop_ups=True)
         self.loop = urwid.MainLoop(self.view, self.palette, pop_ups=True)
+        self.loop.main_window = self
         #self.loop.mwin = self
 
         self.loop.screen.set_terminal_properties(colors=256)
@@ -87,7 +88,6 @@ class MainWindow:
         content = []
         for i in self.game.player_cells:
             content.append((i.palette, i.symbol))
-            # b: Basophil (age: 30) ()
             content.append(('body', ": %s (age: %s)" % (i.name, i.age)))
             content.append(('body', "[ATK/DEF: %s/%s]" % (i.base_attack, i.defense)))
             content.append(('body', '\n'))
@@ -98,10 +98,11 @@ class MainWindow:
         content = []
         for i in self.game.pathogens:
             content.append((i.palette, i.symbol))
-            content.append(('body', "(%s)" % i.name))
+            content.append(('body', ": %s (age: %s)" % (i.name, i.age)))
+            content.append(('body', "[ATK/DEF: %s/%s]" % (i.base_attack, i.defense)))
             content.append(('body', '\n'))
         if content:
-            self.area.cells_txt.set_text(content)
+            self.area.pathogens_txt.set_text(content)
 
 
     def game_tick(self, loop, user_data):
@@ -113,7 +114,7 @@ class MainWindow:
         self.draw_cells()
         self.draw_cells_desc()
         self.draw_pathogens()
-        self.draw_cells_desc()
+        self.draw_pathogens_desc()
 
         self.write_footer()
 
@@ -137,7 +138,7 @@ class MainWindow:
 class MainFrame(urwid.Frame):
 
     def keypress(self, size, key):
-        self.mainloop.game.log("key pressed: %s" % key)
+        #self.mainloop.game.log("key pressed: %s" % key)
         if key == 'q':
             raise urwid.ExitMainLoop()
         elif key == 'n':
@@ -152,6 +153,31 @@ class MainFrame(urwid.Frame):
             else:
                 self.mainloop.game.log("Game paused.")
                 self.mainloop.game.paused = True
+        elif key == 'up':
+            self.mainloop.game.log("key pressed: %s" % key)
+            self.mainloop.area.lymphatic_view()
+            self.mainloop.loop.draw_screen()
+        elif key == 'down':
+            self.mainloop.game.log("key pressed: %s" % key)
+            self.mainloop.area.board_overview()
+            self.mainloop.loop.draw_screen()
+
+            #self.lymph_window()
+
+    #def lymph_window(self):
+        # lymph_txt = urwid.Text("Here would be details about the lymphatic system, the rate of WBC generation and the like.")
+        # box = urwid.LineBox(urwid.Filler(lymph_txt))
+        # overlay = urwid.Overlay(
+        #     top_w = box, 
+        #     bottom_w = self,
+        #     align = 'left',
+        #     width = 40,
+        #     valign = 'middle',
+        #     height = 40,
+        #     #left = 5,
+        #     )
+        # self.mainloop.loop.widget = overlay
+
 
     def purchase_pop_up(self):
 
@@ -181,22 +207,34 @@ class OptionOverlay(urwid.Overlay):
 
 class GameArea:
     def __init__(self):
+        self.board_overview()
+
+    def selectable(self):
+        return True
+
+    def board_overview(self):
         self.cells = urwid.Text("NW")
         self.pathogens = urwid.Text("NE")
         self.cells_txt = urwid.Text("SW")
         self.pathogens_txt = urwid.Text("SE")
 
         self.cells_col = urwid.Pile([
-            (10, urwid.LineBox(urwid.Filler(self.cells))),
-            urwid.LineBox(urwid.Filler(self.cells_txt)),
+            (10, urwid.LineBox(urwid.Filler(self.cells), title='White Blood Cells')),
+            urwid.LineBox(urwid.Filler(self.cells_txt, valign='top'), title='Cell Details'),
         ])
 
         self.pathogens_col = urwid.Pile([
-            (10, urwid.LineBox(urwid.Filler(self.pathogens))),
-            urwid.LineBox(urwid.Filler(self.pathogens_txt)),
+            (10, urwid.LineBox(urwid.Filler(self.pathogens), title='Pathogens')),
+            urwid.LineBox(urwid.Filler(self.pathogens_txt, valign='top'), title='Pathogen Details'),
         ])
 
         self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.pathogens_col]), 'body')
 
-    def selectable(self):
-        return True
+    def lymphatic_view(self):
+        lymph_txt = urwid.Text("Here would be details about the lymphatic system, the rate of WBC generation and the like.")
+        box = urwid.LineBox(urwid.Filler(lymph_txt))
+        self.body = urwid.AttrWrap(box, 'body')
+
+        
+
+

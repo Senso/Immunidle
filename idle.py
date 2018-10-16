@@ -68,13 +68,15 @@ class Game:
 
     def flash(self, loop, target):
         target.palette = "flash %s" % target.palette
-        loop.widget.mainloop.draw_pathogens()
+        #loop.widget.mainloop.draw_pathogens()
+        loop.main_window.draw_pathogens()
         loop.draw_screen()
         loop.set_alarm_in(0.2, self.unflash, target)
 
     def unflash(self, loop, target):
         target.palette = target.palette.replace('flash ', '')
-        loop.widget.mainloop.draw_pathogens()
+        #loop.widget.mainloop.draw_pathogens()
+        loop.main_window.draw_pathogens()
         loop.draw_screen()
 
     def player_attack(self, mwin):
