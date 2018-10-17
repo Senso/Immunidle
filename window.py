@@ -27,6 +27,9 @@ class MainWindow:
         self.header_text = urwid.Text(u"Top\nheader")
         self.header = urwid.AttrWrap(self.header_text, 'header')
 
+        self.footer_text = urwid.Text(u"")
+        self.footer = urwid.AttrWrap(self.footer_text, 'footer')
+
         # self.cell_txt = urwid.Text("")
         # self.pathogen_txt = urwid.Text("")
         # self.player_col = urwid.Filler(self.cell_txt, valign='top', height='pack')
@@ -34,11 +37,9 @@ class MainWindow:
         # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.pathogen_col)])
 
         self.area = GameArea()
+        body = self.area.board_overview()
 
-        self.footer_text = urwid.Text(u"")
-        self.footer = urwid.AttrWrap(self.footer_text, 'footer')
-
-        self.view = MainFrame(header=self.header, body=self.area.body, footer=self.footer, focus_part='body')
+        self.view = MainFrame(header=self.header, body=body, footer=self.footer, focus_part='body')
         self.view.mainloop = self
 
         self.last_alarm = None
@@ -155,11 +156,13 @@ class MainFrame(urwid.Frame):
                 self.mainloop.game.paused = True
         elif key == 'up':
             self.mainloop.game.log("key pressed: %s" % key)
-            self.mainloop.area.lymphatic_view()
+            body = self.mainloop.area.lymphatic_view()
+            self.mainloop.view.contents['body'] = (body, None)
             self.mainloop.loop.draw_screen()
         elif key == 'down':
             self.mainloop.game.log("key pressed: %s" % key)
-            self.mainloop.area.board_overview()
+            body = self.mainloop.area.board_overview()
+            self.mainloop.view.contents['body'] = (body, None)
             self.mainloop.loop.draw_screen()
 
             #self.lymph_window()
@@ -212,6 +215,9 @@ class GameArea:
     def selectable(self):
         return True
 
+    def keypress(self, size, key):
+        self.mainloop.game.log("key pressed: %s" % key)
+
     def board_overview(self):
         self.cells = urwid.Text("NW")
         self.pathogens = urwid.Text("NE")
@@ -228,12 +234,14 @@ class GameArea:
             urwid.LineBox(urwid.Filler(self.pathogens_txt, valign='top'), title='Pathogen Details'),
         ])
 
-        self.body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.pathogens_col]), 'body')
+        body = urwid.AttrWrap(urwid.Columns([self.cells_col, self.pathogens_col]), 'body')
+        return body
 
     def lymphatic_view(self):
         lymph_txt = urwid.Text("Here would be details about the lymphatic system, the rate of WBC generation and the like.")
         box = urwid.LineBox(urwid.Filler(lymph_txt))
-        self.body = urwid.AttrWrap(box, 'body')
+        body = urwid.AttrWrap(box, 'body')
+        return body
 
         
 
