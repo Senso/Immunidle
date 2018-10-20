@@ -138,6 +138,7 @@ class Life(object):
         self.base_attack = self.data.get('base_attack', 0)
         self.lifespan = self.data.get('lifespan', 50)
         self.age = 0
+        self.mutation_chance = 10
 
         # Add ourself to the game world
         if type(self).__name__ == 'Cell':
@@ -149,6 +150,13 @@ class Life(object):
 
     def heartbeat(self, window):
         pass
+
+    def divide(self):
+        pass
+
+    def mutate(self):
+        if randrange(0, 100) < self.mutation_chance:
+            self.game.log("%s mutated!" % self.name)
 
     def die(self, msg=None):
         if type(self).__name__ == 'Cell':
@@ -165,8 +173,6 @@ class Life(object):
         if self.age > self.lifespan:
             self.die('of old age')
 
-    def divide(self):
-        pass
 
 
 class Pathogen(Life):
