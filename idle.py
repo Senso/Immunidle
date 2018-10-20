@@ -138,7 +138,7 @@ class Life(object):
         self.base_attack = self.data.get('base_attack', 0)
         self.lifespan = self.data.get('lifespan', 50)
         self.age = 0
-        self.mutation_chance = 10
+        self.mutation_chance = 5
 
         # Add ourself to the game world
         if type(self).__name__ == 'Cell':
@@ -184,13 +184,13 @@ class Pathogen(Life):
 
     def heartbeat(self, window):
         self.divide()
-        self.game.log("%s divided!" % self.name)
 
     def divide(self):
         if self.division_counter >= self.division_ticks:
             child = Pathogen(self.name, self.game, self.data)
             self.game.pathogens.appen(child)
             child.spawn()
+            self.game.log("%s divided!" % self.name)
         elif self.division_counter >= 0:
             self.division_counter += 1
         elif self.division_counter == -1:
