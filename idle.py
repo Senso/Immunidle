@@ -11,12 +11,12 @@ from window import MainWindow
 ### TODO
 # X game pause
 # pathogens attacking (virus)
-# pathogens replicating
-# python native 64-bit numbers?
-# keypress for bigger/longer log window
+# X pathogens replicating
+# move logging to its own fullscreen window, use footer for help/commands list
 # X programmed cell death
 # mouse clicking for manual protein production?
 # add a single option that scales down/up the game in speed (hp, seconds, defense, protein, etc.)
+# Game tick in its own thread??
 
 class Game:
     def __init__(self, data):
@@ -30,7 +30,7 @@ class Game:
         self.paused = False
 
     def display_log(self):
-        return '\n'.join(self.msglog[-5:])
+        return '\n'.join(self.msglog[-30:])
 
     def log(self, str):
         self.msglog.append(str)
@@ -164,7 +164,7 @@ class Pathogen(Life):
     def divide(self):
         if self.division_counter >= self.division_ticks:
             child = Pathogen(self.name, self.game, self.data)
-            self.game.pathogens.appen(child)
+            self.game.pathogens.append(child)
             child.spawn()
             self.game.log("%s divided!" % self.name)
         elif self.division_counter >= 0:
