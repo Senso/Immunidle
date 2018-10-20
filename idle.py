@@ -79,30 +79,6 @@ class Game:
         loop.main_window.draw_pathogens()
         loop.draw_screen()
 
-    def player_attack(self, mwin):
-        for c in self.player_cells:
-            if not self.pathogens:
-                return
-
-            target = choice(self.pathogens)
-
-            # Calculate damage
-            dmg = c.base_attack
-            dmg += self.dice_roll(1, 3) # add some randomness
-            dmg -= target.defense
-
-            if dmg > 0:
-                ### EXPERIMENTAL
-                mwin.loop.set_alarm_in(0, self.flash, target)
-                target.hp -= dmg
-
-            self.log("%s dealt %s dmg to %s." % (c.name, dmg, target.name))
-
-            if target.hp <= 0:
-                target.die('killed by %s' % c.name)
-                # Pathogen dies/is absorbed
-                #self.pathogens.remove(target)
-
     def spawn_cell(self):
         # Cost grows the more cells you have
         base_cost = 10
