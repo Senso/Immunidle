@@ -110,15 +110,6 @@ class MainWindow:
         # So we have a single alarm object at all times?
         self.loop.remove_alarm(self.last_alarm)
 
-        self.write_header()
-
-        self.draw_cells()
-        self.draw_cells_desc()
-        self.draw_pathogens()
-        self.draw_pathogens_desc()
-
-        self.write_footer()
-
         # If the game is paused, skip these events
         if not self.game.paused:
             # Player attacks
@@ -130,6 +121,15 @@ class MainWindow:
             self.game.check_level_state()
             self.game.age_all_cells()
             self.game.ticks += 1
+
+        self.write_header()
+
+        self.draw_cells()
+        self.draw_cells_desc()
+        self.draw_pathogens()
+        self.draw_pathogens_desc()
+
+        self.write_footer()
 
         self.last_alarm = self.loop.set_alarm_in(sec=1, callback=self.game_tick)
 
