@@ -113,7 +113,15 @@ class MainWindow:
         # If the game is paused, skip these events
         if not self.game.paused:
             # Player attacks
-            self.game.player_attack(self)
+            #self.game.player_attack(self)
+
+            # Cell actions
+            for i in self.game.player_cells:
+                i.heartbeat(self)
+
+            # Pathogens actions
+            for i in self.game.pathogens:
+                i.heartbeat(self)
 
             # Gain a protein
             self.protein_gain(1)

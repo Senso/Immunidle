@@ -147,6 +147,9 @@ class Life(object):
         else:
             self.game.log("Unknown %s tried to spawn." % type(self).__name__)
 
+    def heartbeat(self, window):
+        pass
+
     def die(self, msg=None):
         if type(self).__name__ == 'Cell':
             self.game.player_cells.remove(self)
@@ -162,14 +165,63 @@ class Life(object):
         if self.age > self.lifespan:
             self.die('of old age')
 
+    def divide(self):
+        pass
+
 
 class Pathogen(Life):
     def __init__(self, name, game, data):
         super().__init__(name, game, data)
+        self.division_ticks = 5
+        self.division_counter = -1
+        self.division_chance = 20
+
+    def heartbeat(self, window):
+        self.divide()
+        self.game.log("%s divided!" % self.name)
+
+    def divide(self):
+        if self.division_counter >= self.division_ticks:
+            child = Pathogen(self.name, self.game, self.data)
+            self.game.pathogens.appen(child)
+            child.spawn()
+        elif self.division_counter >= 0:
+            self.division_counter += 1
+        elif self.division_counter == -1:
+            if randrange(0,100) < self.division_chance:
+                self.division_counter = 0
+
 
 class Cell(Life):
     def __init__(self, name, game, data):
         super().__init__(name, game, data)
+
+    def heartbeat(self, window):
+        self.attack(window)
+
+    def attack(self, window):
+        #for c in self.player_cells:
+        if not self.game.pathogens:
+            return
+
+        target = choice(self.game.pathogens)
+
+        # Calculate damage
+        dmg = self.base_attack
+        dmg += self.game.dice_roll(1, 3) # add some randomness
+        dmg -= target.defense
+
+        if dmg > 0:
+            ### EXPERIMENTAL
+            window.loop.set_alarm_in(0, self.game.flash, target)
+            target.hp -= dmg
+
+            self.game.log("%s dealt %s dmg to %s." % (self.name, dmg, target.name))
+
+            if target.hp <= 0:
+                target.die('killed by %s' % self.name)
+                # Pathogen dies/is absorbed
+                #self.pathogens.remove(target)
 
 
 if __name__ == '__main__':
