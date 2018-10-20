@@ -37,6 +37,7 @@ class MainWindow:
         # self.body = urwid.Columns([urwid.LineBox(self.player_col), urwid.LineBox(self.pathogen_col)])
 
         self.area = GameArea()
+        self.area.mainloop = self
         body = self.area.board_overview()
 
         self.view = MainFrame(header=self.header, body=body, footer=self.footer, focus_part='body')
@@ -68,8 +69,8 @@ class MainWindow:
         self.header_text.set_text(header_txt)
 
     def write_footer(self):
-        footer_txt = self.game.display_log()
-        self.footer_text.set_text(footer_txt)
+        #footer_txt = self.game.display_log()
+        self.footer_text.set_text("")
 
     def draw_cells(self):
         cell_str = []
@@ -146,9 +147,13 @@ class MainWindow:
 
 class MainFrame(urwid.Frame):
 
+    active_window = None
+
     def keypress(self, size, key):
         #self.mainloop.game.log("key pressed: %s" % key)
         if key == 'q':
+            raise urwid.ExitMainLoop()
+        elif key == 'esc':
             raise urwid.ExitMainLoop()
         elif key == 'n':
             self.mainloop.game.spawn_cell()
@@ -163,15 +168,23 @@ class MainFrame(urwid.Frame):
                 self.mainloop.game.log("Game paused.")
                 self.mainloop.game.paused = True
         elif key == 'up':
-            self.mainloop.game.log("key pressed: %s" % key)
+            #self.mainloop.game.log("key pressed: %s" % key)
             body = self.mainloop.area.lymphatic_view()
             self.mainloop.view.contents['body'] = (body, None)
             self.mainloop.loop.draw_screen()
         elif key == 'down':
-            self.mainloop.game.log("key pressed: %s" % key)
+            #self.mainloop.game.log("key pressed: %s" % key)
             body = self.mainloop.area.board_overview()
             self.mainloop.view.contents['body'] = (body, None)
             self.mainloop.loop.draw_screen()
+        elif key == 'm':
+            # Pause the game while in log view
+            self.mainloop.game.paused = True
+            self.mainloop.game.log("Current focus: %s" % self.get_focus_widgets())
+            body = self.mainloop.area.log_view()
+            self.mainloop.view.contents['body'] = (body, None)
+            self.mainloop.loop.draw_screen()
+
 
             #self.lymph_window()
 
@@ -224,13 +237,14 @@ class GameArea:
         return True
 
     def keypress(self, size, key):
-        self.mainloop.game.log("key pressed: %s" % key)
+        pass
+        #self.mainloop.game.log("key pressed: %s" % key)
 
     def board_overview(self):
-        self.cells = urwid.Text("NW")
-        self.pathogens = urwid.Text("NE")
-        self.cells_txt = urwid.Text("SW")
-        self.pathogens_txt = urwid.Text("SE")
+        self.cells = urwid.Text("")
+        self.pathogens = urwid.Text("")
+        self.cells_txt = urwid.Text("")
+        self.pathogens_txt = urwid.Text("")
 
         self.cells_col = urwid.Pile([
             (10, urwid.LineBox(urwid.Filler(self.cells), title='White Blood Cells')),
@@ -251,6 +265,20 @@ class GameArea:
         body = urwid.AttrWrap(box, 'body')
         return body
 
-        
+    def log_view(self):
+        footer_txt = self.mainloop.game.display_log()
+        footer = urwid.Text(footer_txt)
+        box = LogBody(urwid.Filler(footer))
+        body = urwid.AttrWrap(box, 'body')
+        return body
 
+
+# test class to override keypresses in the body of MainFrame for specific windows
+class LogBody(urwid.LineBox):
+    def selectable(self):
+        return True
+
+    def keypress(self, size, key):   
+        if key == 'esc':
+            raise urwid.ExitMainLoop()
 
